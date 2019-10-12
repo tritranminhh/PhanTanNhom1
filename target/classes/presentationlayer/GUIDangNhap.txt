@@ -1,0 +1,151 @@
+package QuanLyChoThueBangDia;
+
+
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.regex.Pattern;
+
+import javax.swing.*;
+
+import sun.util.resources.cldr.zh.TimeZoneNames_zh_Hant;
+
+
+
+public class GUIDangNhap extends JFrame implements ActionListener,KeyListener{
+	/**
+	 * 
+	 */
+	
+	JLabel lbllogOn,lbluseName,lblpassWord,lblh1;
+	JTextField txtuserName;
+	JPasswordField txtpassWord;
+	JButton btnlogOn,btnExit;
+	QuanLyNhanVien nv = new QuanLyNhanVien();
+	public static String users;
+	public  GUIDangNhap() {
+		setTitle("Quản Lý Băng Đĩa CD");
+		setSize(540,306);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		JPanel pNorth;
+		add(pNorth = new JPanel(),BorderLayout.NORTH);
+		pNorth.setBorder(BorderFactory.createLineBorder(Color.red));
+		pNorth.add(lbllogOn =new JLabel("Đăng Nhập"));
+		lbllogOn.setBackground(Color.red);
+		JPanel pTrai;
+		add(pTrai = new JPanel(),BorderLayout.WEST);
+		pTrai.add(lblh1 = new JLabel(new ImageIcon(".\\image\\key.png")));
+		pTrai.setBorder(BorderFactory.createLineBorder(Color.red));
+		Box bp =Box.createVerticalBox();
+		add(bp,BorderLayout.CENTER);
+		bp.add(Box.createVerticalStrut(50));
+		bp.setBorder(BorderFactory.createLineBorder(Color.red));
+		Box b1= Box.createHorizontalBox();
+		bp.add(b1);
+		b1.add(Box.createHorizontalStrut(10));
+		b1.add(lbluseName = new JLabel("Tài Khoản"));
+		b1.add(Box.createHorizontalStrut(10));
+		b1.add(txtuserName = new JTextField());
+		b1.add(Box.createHorizontalStrut(50));
+		
+		Box b2= Box.createHorizontalBox();
+		bp.add(b2);
+		b2.add(Box.createHorizontalStrut(10));
+		b2.add(lblpassWord = new JLabel("Mật Khẩu"));
+		b2.add(Box.createHorizontalStrut(13));
+		b2.add(txtpassWord = new JPasswordField());
+		b2.add(Box.createHorizontalStrut(50));
+		bp.add(Box.createVerticalStrut(100));
+		
+		Box bd = Box.createHorizontalBox();
+		add(bd,BorderLayout.SOUTH);
+		bd.add(Box.createHorizontalStrut(100));
+		bd.setBorder(BorderFactory.createLineBorder(Color.red));
+		bd.add(btnlogOn = new JButton("Đăng Nhập",new ImageIcon(".\\image\\login.png")));
+		btnlogOn.setMaximumSize(getPreferredSize());
+		bd.add(Box.createHorizontalStrut(10));
+		bd.add(btnExit = new JButton("Thoát",new ImageIcon(".\\image\\logout.png")));
+		btnExit.setMaximumSize(getPreferredSize());
+		bd.add(Box.createHorizontalStrut(100));
+			
+	
+		btnlogOn.addActionListener(this);
+		btnExit.addActionListener(this);
+		txtpassWord.addKeyListener(this);
+		setVisible(true);
+//		setResizable(false);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object o = e.getSource();
+		if(o.equals(btnExit))
+			System.exit(0);
+		if(o.equals(btnlogOn))
+			Logon();
+	}
+	public static void main(String[] args) {
+		try {
+            UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
+    		new GUIDangNhap();
+        }catch (Exception e) {
+        	e.printStackTrace();
+		}
+	}
+	public void Logon () {
+		try{
+			String b= new String(txtpassWord.getPassword());
+			//Quản Lý Đăng Nhập 0
+			if(Pattern.matches("(^QL_admin)",txtuserName.getText()))
+				if(b.equalsIgnoreCase("123")) {
+					new GiaoDienChinh(0).setTitleByMaNV("QL");
+					users = null;
+					dispose();
+					return;
+				}
+				else
+					JOptionPane.showMessageDialog(this,"Nhập Sai Mật Khẩu");
+			//Nhân Viên Đăng Nhập 1
+			else {
+				if(txtuserName.getText().matches("[0-9]{3,4}"))
+					if(nv.timNhanVien(txtuserName.getText(), b)){
+						 GiaoDienChinh gdc = new GiaoDienChinh(1);
+						gdc.setTitleByMaNV(txtuserName.getText());
+						users = txtuserName.getText();
+						//new GUIPhieuThue(GUIQuanLyKhachHang).layMaNV(txtuserName.getText());
+						dispose();
+					}else
+						JOptionPane.showMessageDialog(this,"Không Tồn Tại Tài Khoản, Hoặc Sai Mật Khẩu");
+				else
+					JOptionPane.showMessageDialog(null,"Nhập Sai Định Dạng");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this,"Không Được Để Trống");
+		}
+	}
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		
+	}
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if(e.getKeyCode()==KeyEvent.VK_ENTER)
+		{
+			Logon();
+		}
+	}
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		
+	}
+	
+	
+}
